@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">CustomVideoPlayer</string>
+    <string name="app_name">视频播放器</string>
+
+    <string name="folder_name_all_pic">所有照片</string>
+    <string name="loading_media_msg">读取中...</string>
 </resources>

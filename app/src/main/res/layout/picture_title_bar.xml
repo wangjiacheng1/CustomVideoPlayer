@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/titleViewBg"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/gray" />
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/picture_icon_back"
+        android:padding="12dp"/>
+
+    <TextView
+        android:id="@+id/tv_folder_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="相机胶卷"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:layout_toRightOf="@+id/iv_back"/>
+
+</merge>

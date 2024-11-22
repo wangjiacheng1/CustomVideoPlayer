@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.org.customvideoplayer.view.SquareRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="1dp">
+
+    <ImageView
+        android:id="@+id/iv_item_pic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <CheckBox
+        android:id="@+id/btn_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@null"
+        android:drawableLeft="@drawable/picture_icon_def"
+        android:drawableStart="@drawable/picture_icon_def"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:layout_alignParentRight="true"
+        android:layout_margin="4dp"/>
+
+<!--    <TextView-->
+<!--        android:id="@+id/tvCheck"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:background="?attr/picture.checked.style"-->
+<!--        android:gravity="center"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="12sp" />-->
+
+</com.org.customvideoplayer.view.SquareRelativeLayout>
