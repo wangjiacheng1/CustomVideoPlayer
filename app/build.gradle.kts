@@ -42,4 +42,5 @@ dependencies {
 //    }
     implementation("com.github.bumptech.glide:compiler:4.4.0")
     implementation ("com.google.android.exoplayer:exoplayer:2.18.3")
+    implementation ("com.google.code.gson:gson:2.10.1")
 }

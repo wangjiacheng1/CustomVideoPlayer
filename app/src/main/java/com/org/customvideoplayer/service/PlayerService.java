@@ -33,6 +33,8 @@ public class PlayerService extends Service {
 
     private ExoPlayer player;
 
+    protected Context mContext;
+
     public class MyPlayerBinder extends Binder {
         public PlayerService getService(){
             return PlayerService.this;
@@ -44,6 +46,7 @@ public class PlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
     }
 
     @Override
@@ -69,15 +72,19 @@ public class PlayerService extends Service {
         releasePlayer();
     }
 
-    public void initPlayer(String videoPath) {
+    public void initPlayerByPath(String videoPath) {
         File file = checkVidoFile(videoPath);
         if (file == null){
             return;
         }
 
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this,
-                Util.getUserAgent(this, "exoPlayerDemo"));
         Uri uri = Uri.fromFile(file);
+        initPlayer(uri);
+    }
+
+    public void initPlayer(Uri uri){
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this,
+                Util.getUserAgent(this, mContext.getResources().getString(R.string.app_name)));
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(MediaItem.fromUri(uri));
 //        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)

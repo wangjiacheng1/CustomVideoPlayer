@@ -198,6 +198,7 @@ public class MediaLoader {
                 String[] projection = PROJECTION;
                 String selection = getSelection();
                 String[] args = getSelectionArgs();
+                Log.d(TAG, "loadAllMedia, projection = " + projection + ", selection = " + selection + ", args = " + args);
                 Cursor cursor = mContext.getContentResolver().query(QUERY_URI, projection, selection, args, ORDER_BY);
                 if (cursor == null || cursor.getCount() == 0){
                     Log.w(TAG, "loadAllMedia, data is empty");

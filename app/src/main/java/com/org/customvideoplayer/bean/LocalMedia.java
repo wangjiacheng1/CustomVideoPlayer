@@ -3,6 +3,8 @@ package com.org.customvideoplayer.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+
 public class LocalMedia implements Parcelable {
 
     private long id;
@@ -183,6 +185,12 @@ public class LocalMedia implements Parcelable {
                 ", size=" + size +
                 ", bucketId=" + bucketId +
                 '}';
+    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;
     }
 
     public static final Creator<LocalMedia> CREATOR = new Creator<LocalMedia>() {

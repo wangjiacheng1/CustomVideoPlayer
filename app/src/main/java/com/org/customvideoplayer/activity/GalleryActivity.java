@@ -2,6 +2,7 @@ package com.org.customvideoplayer.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -16,6 +17,7 @@ import com.org.customvideoplayer.R;
 import com.org.customvideoplayer.adapter.GridGalleryAdapter;
 import com.org.customvideoplayer.bean.LocalMedia;
 import com.org.customvideoplayer.bean.LocalMediaFolder;
+import com.org.customvideoplayer.common.Constants;
 import com.org.customvideoplayer.helper.MediaLoader;
 import com.org.customvideoplayer.interfaces.LoadMediaResultCallback;
 import com.org.customvideoplayer.interfaces.OnPhotoClickListener;
@@ -142,7 +144,7 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
      */
     @Override
     public void onAddClick() {
-
+        //ignore
     }
 
     /**
@@ -154,5 +156,14 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
     public void onPhotoClick(Object data, int position) {
         LocalMedia photo = (LocalMedia) data;
         Log.d(TAG, "onPhotoClick, photo = " + photo.getRealPath());
+        Toast.makeText(this, "选择成功", Toast.LENGTH_SHORT).show();
+        handleSelectFinish(photo);
+    }
+
+    protected void handleSelectFinish(LocalMedia media){
+        String json = media.toJson();
+        Intent data = new Intent();
+        data.putExtra(Constants.PARAM_KEY_SELECTED_MEDIA, json);
+        setResult(RESULT_OK, data);
     }
 }
