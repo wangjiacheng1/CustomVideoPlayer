@@ -26,3 +26,18 @@ java.lang.SecurityException: com.org.customvideoplayer has no access to content:
 		at com.android.providers.media.MediaProvider.onFileOpenForFuse(MediaProvider.java:9699)
 ```
 
+## 2025.01.01
+
+使用AI工具cursor优化了界面的部分逻辑，增加了如下功能：
+
+横屏适配、进度条、手势控制（调节亮度、音量、播放进度）、锁屏
+
+解决问题：
+
+1.传入视频提示的权限问题：降低targetSDK版本，好像只有小米手机会有这个问题
+
+当前问题：
+
+1.使用cursor新增加的功能暂未测试
+
+2.UI界面中，ExoPlayer2的界面和自添加的组件会有冲突，后续考虑使用继承重写ExoPlayer界面？
