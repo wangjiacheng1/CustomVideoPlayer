@@ -158,6 +158,7 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
         Log.d(TAG, "onPhotoClick, photo = " + photo.getRealPath());
         Toast.makeText(this, "选择成功", Toast.LENGTH_SHORT).show();
         handleSelectFinish(photo);
+        finish();
     }
 
     protected void handleSelectFinish(LocalMedia media){

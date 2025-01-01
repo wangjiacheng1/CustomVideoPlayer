@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "com.org.customvideoplayer"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 31
         versionCode = 1
         versionName = "1.0"
 

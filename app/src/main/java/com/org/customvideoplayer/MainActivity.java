@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             checkPermission();
         }
         Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.putExtra(Constants.PARAM_KEY_START_PLAY_MEDIA_URL, curSelectedMedia.getRealPath());
         startActivity(intent);
     }
 

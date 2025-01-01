@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -35,6 +36,8 @@ public class PlayerService extends Service {
 
     protected Context mContext;
 
+    private boolean isLooping = false;
+
     public class MyPlayerBinder extends Binder {
         public PlayerService getService(){
             return PlayerService.this;
@@ -51,6 +54,7 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
         createNotificationChannel();
         return START_STICKY;
     }
@@ -91,6 +95,17 @@ public class PlayerService extends Service {
 //                .createMediaSource(MediaItem.fromUri(Uri.parse(videoPath)));
         player = new SimpleExoPlayer.Builder(this).build();
         player.setMediaSource(mediaSource);
+
+        // 设置循环播放监听
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if (state == Player.STATE_ENDED && isLooping) {
+                    player.seekTo(0);
+                    player.setPlayWhenReady(true);
+                }
+            }
+        });
     }
 
     public ExoPlayer getPlayer() {
@@ -144,5 +159,9 @@ public class PlayerService extends Service {
 //            return null;
 //        }
         return file;
+    }
+
+    public void setLooping(boolean looping) {
+        this.isLooping = looping;
     }
 }
