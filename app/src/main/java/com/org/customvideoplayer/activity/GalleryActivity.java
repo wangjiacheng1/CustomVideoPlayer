@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,8 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
 
     RecyclerView pictureRecycle;
     TextView mFolderTitleTv;
+    ImageView mBackIv;
+
     GridGalleryAdapter mAdapter;
     MediaLoader mMediaLoader;
     Context mContext;
@@ -47,6 +50,7 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
         mContext = getApplicationContext();
         mMediaLoader = new MediaLoader(mContext);
         initView();
+        initListener();
     }
 
     @Override
@@ -71,12 +75,17 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
 
     protected void initView(){
         pictureRecycle = findViewById(R.id.recycle_picture);
-        mFolderTitleTv =findViewById(R.id.tv_folder_title);
+        mFolderTitleTv = findViewById(R.id.tv_folder_title);
+        mBackIv = findViewById(R.id.iv_back);
 
         pictureRecycle.setLayoutManager(new GridLayoutManager(mContext, GRID_SPAN_COUNT));
 
         mAdapter = new GridGalleryAdapter(mContext, this);
         pictureRecycle.setAdapter(mAdapter);
+    }
+
+    protected void initListener(){
+        mBackIv.setOnClickListener(v -> finish());
     }
 
     public boolean checkPermission(){
@@ -114,6 +123,7 @@ public class GalleryActivity extends BaseActivity implements OnPhotoClickListene
             @Override
             public void onLoadError(int errCode, String errMsg, Throwable e) {
                 Log.i(TAG, "initData.onLoadError, errCode = " + errCode + ", errMsg = " + errMsg + e == null ? "" : "Throwable : " + e);
+                dismissProgressDialog();
             }
         });
     }

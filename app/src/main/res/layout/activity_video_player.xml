@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
 
     <!-- 视频播放区域 -->
-    <com.google.android.exoplayer2.ui.PlayerView
+    <androidx.media3.ui.PlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        app:controller_layout_id="@null"/>
 
     <!-- 顶部控制栏 -->
     <RelativeLayout
@@ -36,6 +39,13 @@
             android:layout_toEndOf="@id/btn_back"
             android:textColor="@color/white"
             android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <!-- 底部控制栏 -->
@@ -65,10 +75,10 @@
 
             <ImageButton
                 android:id="@+id/btn_play_pause"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_pause_white"/>
+                android:src="@drawable/ic_play_white"/>
 
             <TextView
                 android:id="@+id/text_current_time"
@@ -99,27 +109,13 @@
                 android:layout_weight="1"/>
 
             <ImageButton
-                android:id="@+id/btn_speed"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_speed"/>
-
-            <ImageButton
                 android:id="@+id/btn_orientation"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_fullscreen"/>
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="24dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_full_screen"/>
 
-            <ImageButton
-                android:id="@+id/btn_lock"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_lock"/>
 
             <Switch
                 android:id="@+id/switch_loop"
@@ -127,15 +123,33 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="循环"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:visibility="gone"/>
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_lock"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="10dp"
+        android:padding="6dp"
+        android:background="@drawable/control_button_bg"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/iv_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lock"/>
     </LinearLayout>
 
     <!-- 解锁按钮 -->
     <ImageButton
         android:id="@+id/btn_unlock"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_centerInParent="true"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_unlock"

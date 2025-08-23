@@ -6,38 +6,38 @@
 
 ## 2024.11.22
 
-创建了项目，引入了ExoPlayer2到项目中作为播放器的插件，初步考虑了大概框架和实现思路，
+    创建了项目，引入了ExoPlayer2到项目中作为播放器的插件，初步考虑了大概框架和实现思路，
 
-播放功能放到Service中，以实现后台播放的功能，然后Activity通过bindService的方式和Service交互，从而控制播放进度。
+    播放功能放到Service中，以实现后台播放的功能，然后Activity通过bindService的方式和Service交互，从而控制播放进度。
 
-当前问题：
+    当前问题：
 
-1.传入视频Path会提示权限问题：
+    1.传入视频Path会提示权限问题：
 
-```
-Permission to access file:/storage/emulated/0/Download/QuarkDownloads/CloudDrive/c6d30dc45ad030fba581e89a33740ed3/321123.mov is denied uid = 10405 forWrite = false
-
-java.lang.SecurityException: com.org.customvideoplayer has no access to content://media/external_primary/file/1000053355 
-	forWrite = false
-		at com.android.providers.media.MediaProvider.enforceCallingPermissionInternal(MediaProvider.java:10568)
-		at com.android.providers.media.MediaProvider.enforceCallingPermission(MediaProvider.java:10465)
-		at com.android.providers.media.MediaProvider.checkAccess(MediaProvider.java:10592)
-		at com.android.providers.media.MediaProvider.checkIfFileOpenIsPermitted(MediaProvider.java:9586)
-		at com.android.providers.media.MediaProvider.onFileOpenForFuse(MediaProvider.java:9699)
-```
+    ```
+    Permission to access file:/storage/emulated/0/Download/QuarkDownloads/CloudDrive/c6d30dc45ad030fba581e89a33740ed3/321123.mov is denied uid = 10405 forWrite = false
+    
+    java.lang.SecurityException: com.org.customvideoplayer has no access to content://media/external_primary/file/1000053355 
+        forWrite = false
+            at com.android.providers.media.MediaProvider.enforceCallingPermissionInternal(MediaProvider.java:10568)
+            at com.android.providers.media.MediaProvider.enforceCallingPermission(MediaProvider.java:10465)
+            at com.android.providers.media.MediaProvider.checkAccess(MediaProvider.java:10592)
+            at com.android.providers.media.MediaProvider.checkIfFileOpenIsPermitted(MediaProvider.java:9586)
+            at com.android.providers.media.MediaProvider.onFileOpenForFuse(MediaProvider.java:9699)
+    ```
 
 ## 2025.01.01
 
-使用AI工具cursor优化了界面的部分逻辑，增加了如下功能：
-
-横屏适配、进度条、手势控制（调节亮度、音量、播放进度）、锁屏
-
-解决问题：
-
-1.传入视频提示的权限问题：降低targetSDK版本，好像只有小米手机会有这个问题
-
-当前问题：
-
-1.使用cursor新增加的功能暂未测试
-
-2.UI界面中，ExoPlayer2的界面和自添加的组件会有冲突，后续考虑使用继承重写ExoPlayer界面？
+    使用AI工具cursor优化了界面的部分逻辑，增加了如下功能：
+    
+    横屏适配、进度条、手势控制（调节亮度、音量、播放进度）、锁屏
+    
+    解决问题：
+    
+    1.传入视频提示的权限问题：降低targetSDK版本，好像只有小米手机会有这个问题
+    
+    当前问题：
+    
+    1.使用cursor新增加的功能暂未测试
+    
+    2.UI界面中，ExoPlayer2的界面和自添加的组件会有冲突，后续考虑使用继承重写ExoPlayer界面？

@@ -41,6 +41,7 @@ dependencies {
 //        exclude("com.android.support", "support-compat")
 //    }
     implementation("com.github.bumptech.glide:compiler:4.4.0")
-    implementation ("com.google.android.exoplayer:exoplayer:2.18.3")
+    implementation ("androidx.media3:media3-exoplayer:1.1.0")
+    implementation ("androidx.media3:media3-ui:1.1.0")
     implementation ("com.google.code.gson:gson:2.10.1")
 }

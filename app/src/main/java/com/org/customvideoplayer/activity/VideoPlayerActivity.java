@@ -3,6 +3,7 @@ package com.org.customvideoplayer.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,9 +30,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ui.PlayerView;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.Player;
+import androidx.media3.ui.PlayerView;
 import com.org.customvideoplayer.R;
 import com.org.customvideoplayer.common.Constants;
 import com.org.customvideoplayer.service.PlayerService;
@@ -61,8 +61,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
     // 控制相关变量
     private boolean isSpeedUp = false;
     private boolean isControllerShow = true;
-    private Handler hideControllerHandler = new Handler();
+    private Handler mHandler = new Handler();
     private static final long CONTROLLER_HIDE_TIMEOUT = 3000L; // 3秒后隐藏控制栏
+    private Runnable hideControllerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hideController();
+        }
+    };
+    private long lastClickTime = 0;
+    private static final long DOUBLE_CLICK_TIMEOUT = 500; // 双击间隔阈值
 
     // Service相关
     private Context mContext;
@@ -82,8 +90,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private int currentVolume;
     private float currentBrightness;
 
-    private ImageButton lockButton;
-    private View unlockButton;
+    private LinearLayout lockButton;
+    private ImageView lockIcon;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -129,8 +137,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void initView() {
         mPlayView = findViewById(R.id.player_view);
+        mPlayView.setUseController(false);
         playPauseButton = findViewById(R.id.btn_play_pause);
-        speedButton = findViewById(R.id.btn_speed);
         backButton = findViewById(R.id.btn_back);
         videoTitle = findViewById(R.id.video_title);
         currentTimeText = findViewById(R.id.text_current_time);
@@ -141,7 +149,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         bottomController = findViewById(R.id.bottom_controller);
         orientationButton = findViewById(R.id.btn_orientation);
         lockButton = findViewById(R.id.btn_lock);
-        unlockButton = findViewById(R.id.btn_unlock);
+        lockIcon = findViewById(R.id.iv_lock);
     }
 
     protected void handleIntent(){
@@ -193,52 +201,54 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void togglePlayPause() {
+        if (player != null) {
+            if (player.isPlaying()) {
+                playerService.pauseVideo();
+                playPauseButton.setImageResource(R.drawable.ic_play_white);
+            } else {
+                playerService.playVideo();
+                playPauseButton.setImageResource(R.drawable.ic_pause_white);
+            }
+            showController();
+        }
+    }
+
     private void initControls() {
         // 返回按钮
         backButton.setOnClickListener(v -> finish());
 
         // 播放/暂停按钮
-        playPauseButton.setOnClickListener(v -> {
-            if (player != null) {
-                if (player.isPlaying()) {
-                    playerService.pauseVideo();
-                    playPauseButton.setImageResource(R.drawable.ic_play_white);
-                } else {
-                    playerService.playVideo();
-                    playPauseButton.setImageResource(R.drawable.ic_pause_white);
-                }
-                showController();
-            }
-        });
+        playPauseButton.setOnClickListener(v -> togglePlayPause());
 
         // 长按加速按钮
-        speedButton.setOnTouchListener((v, event) -> {
-            if (player == null) return false;
-            
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    isSpeedUp = true;
-                    player.setPlaybackSpeed(2.0f);
-                    showController();
-                    return true;
-                    
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:    
-                    isSpeedUp = false;
-                    player.setPlaybackSpeed(1.0f);
-                    showController();
-                    return true;
-            }
-            return false;
-        });
+//        speedButton.setOnTouchListener((v, event) -> {
+//            if (player == null) return false;
+//
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    isSpeedUp = true;
+//                    player.setPlaybackSpeed(2.0f);
+//                    showController();
+//                    return true;
+//
+//                case MotionEvent.ACTION_UP:
+//                case MotionEvent.ACTION_CANCEL:
+//                    isSpeedUp = false;
+//                    player.setPlaybackSpeed(1.0f);
+//                    showController();
+//                    return true;
+//            }
+//            return false;
+//        });
 
         // 循环播放开关
-        loopSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (playerService != null) {
-                playerService.setLooping(isChecked);
-            }
-            showController();
-        });
+//        loopSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (playerService != null) {
+//                playerService.setLooping(isChecked);
+//            }
+//            showController();
+//        });
 
         // 进度条
         videoProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -261,7 +271,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
-        // 横竖屏切换���钮
+        // 横竖屏切换按钮
         orientationButton.setOnClickListener(v -> {
             toggleOrientation();
             showController();
@@ -269,24 +279,31 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         // 锁屏按钮
         lockButton.setOnClickListener(v -> {
-            isLocked = true;
-            lockButton.setVisibility(View.GONE);
-            unlockButton.setVisibility(View.VISIBLE);
-            hideController();
+            handleLockBtnClick();
         });
 
-        // 解锁按钮
-        unlockButton.setOnClickListener(v -> {
-            isLocked = false;
-            lockButton.setVisibility(View.VISIBLE);
-            unlockButton.setVisibility(View.GONE);
-            showController();
-        });
     }
 
+    private void handleLockBtnClick(){
+        if (isLocked){
+            isLocked = false;
+            showController();
+            lockIcon.setImageResource(R.drawable.ic_lock);
+        }else {
+            isLocked = true;
+            hideController();
+            lockIcon.setImageResource(R.drawable.ic_unlock);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private void setupGestureDetector() {
         mPlayView.setOnTouchListener((v, event) -> {
-            if (isLocked) return true; // 锁屏状态下不响应其他手势
+            if (isLocked) {
+                lockButton.setVisibility(View.VISIBLE);
+                hideControllerDelay();
+                return true; // 锁屏状态下不响应其他手势
+            }
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -300,6 +317,9 @@ public class VideoPlayerActivity extends AppCompatActivity {
                         // 水平滑动，调节播放进度
                         adjustPlaybackPosition(deltaX);
                     } else {
+                        if (deltaY == 0){
+                            break;
+                        }
                         if (initialX < screenWidth / 2) {
                             // 左半屏，调节亮度
                             adjustBrightness(deltaY);
@@ -310,6 +330,24 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     }
                     break;
                 case MotionEvent.ACTION_UP:
+                    float moveDistance = (float) Math.hypot(event.getX() - initialX, event.getY() - initialY);
+                    if (moveDistance >= 50) {
+                        break;
+                    }
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastClickTime < DOUBLE_CLICK_TIMEOUT) {
+                        // 双击事件
+                        togglePlayPause();
+                        lastClickTime = 0;
+                    } else {
+                        // 单击事件，延迟执行以检测双击
+                        lastClickTime = currentTime;
+                        mHandler.postDelayed(() -> {
+                            if (System.currentTimeMillis() - lastClickTime >= DOUBLE_CLICK_TIMEOUT) {
+                                toggleController();
+                            }
+                        }, DOUBLE_CLICK_TIMEOUT);
+                    }
                     break;
             }
             return true;
@@ -351,6 +389,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         if (!isControllerShow) {
             topController.setVisibility(View.VISIBLE);
             bottomController.setVisibility(View.VISIBLE);
+            lockButton.setVisibility(View.VISIBLE);
             isControllerShow = true;
         }
         hideControllerDelay();
@@ -360,17 +399,18 @@ public class VideoPlayerActivity extends AppCompatActivity {
         if (isControllerShow) {
             topController.setVisibility(View.GONE);
             bottomController.setVisibility(View.GONE);
+            lockButton.setVisibility(View.GONE);
             isControllerShow = false;
         }
     }
 
     private void hideControllerDelay() {
-        removeControllerHideCallbacks();
-        hideControllerHandler.postDelayed(this::hideController, CONTROLLER_HIDE_TIMEOUT);
+        mHandler.removeCallbacks(hideControllerRunnable);
+        mHandler.postDelayed(hideControllerRunnable, CONTROLLER_HIDE_TIMEOUT);
     }
 
     private void removeControllerHideCallbacks() {
-        hideControllerHandler.removeCallbacks(null);
+        mHandler.removeCallbacks(hideControllerRunnable);
     }
 
     private void updatePlayTime() {
@@ -432,12 +472,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
         if (isFullScreen) {
             // 切换到竖屏
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            orientationButton.setImageResource(R.drawable.ic_fullscreen);
+            orientationButton.setImageResource(R.drawable.ic_full_screen);
             isFullScreen = false;
         } else {
-            // ���换到横屏
+            // 换到横屏
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            orientationButton.setImageResource(R.drawable.ic_fullscreen_exit);
+            orientationButton.setImageResource(R.drawable.ic_full_screen_exit);
             isFullScreen = true;
         }
     }
@@ -445,8 +485,28 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // 横屏布局调整
+        // 重新加载对应方向的布局文件
+        setContentView(R.layout.activity_video_player);
+        initView();
+        // 恢复视频标题
+        videoTitle.setText(TextUtils.isEmpty(mediaUrl) ? getVideoNameFromPath(path) : getVideoNameFromUrl(mediaUrl));
+        initControls();
+        setupGestureDetector();
+        
+        // 恢复播放器状态
+        if (player != null) {
+            mPlayView.setPlayer(player);
+            playPauseButton.setImageResource(player.isPlaying() ? R.drawable.ic_pause_white : R.drawable.ic_play_white);
+            updatePlayTime();
+            initVideoProgress();
+        }
+        
+        // 更新全屏状态和按钮图标
+        isFullScreen = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
+        orientationButton.setImageResource(isFullScreen ? R.drawable.ic_full_screen_exit : R.drawable.ic_full_screen);
+
+        // 设置系统UI标志
+        if (isFullScreen) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getWindow().getDecorView().setSystemUiVisibility(
@@ -456,30 +516,19 @@ public class VideoPlayerActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            
-            ViewGroup.LayoutParams params = mPlayView.getLayoutParams();
-            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            mPlayView.setLayoutParams(params);
-            
-            // 调整控制栏布局
-            topController.setVisibility(View.GONE);
-            bottomController.setOrientation(LinearLayout.HORIZONTAL);
-            bottomController.setGravity(Gravity.CENTER_VERTICAL);
         } else {
-            // 竖屏布局调整
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-            
-            ViewGroup.LayoutParams params = mPlayView.getLayoutParams();
-            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mPlayView.setLayoutParams(params);
-            
-            // 恢复控制栏布局
-            topController.setVisibility(View.VISIBLE);
-            bottomController.setOrientation(LinearLayout.VERTICAL);
-            bottomController.setGravity(Gravity.CENTER);
+        }
+
+        // 恢复锁定状态
+        lockButton.setVisibility(isLocked ? View.GONE : View.VISIBLE);
+
+        // 恢复控制栏状态
+        if (isControllerShow) {
+            showController();
+        } else {
+            hideController();
         }
     }
 
@@ -502,7 +551,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        hideControllerHandler.removeCallbacks(null);
+        mHandler.removeCallbacks(null);
         if (isBound) {
             unbindService(connection);
         }

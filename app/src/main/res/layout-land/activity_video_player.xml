@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:controller_layout_id="@null" />
+
+    <!-- 顶部控制栏 -->
+    <RelativeLayout
+        android:id="@+id/top_controller"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/video_title_bg"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:padding="4dp"
+            android:src="@drawable/ic_back_white"/>
+
+        <TextView
+            android:id="@+id/video_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/btn_back"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+    <!-- 横屏底部控制栏 -->
+    <LinearLayout
+        android:id="@+id/bottom_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/video_control_bg"
+        android:padding="12dp">
+
+        <ImageButton
+            android:id="@+id/btn_play_pause"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_play_white"
+            android:background="@android:color/transparent"
+            android:layout_marginEnd="24dp"/>
+
+        <TextView
+            android:id="@+id/text_current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"/>
+
+        <SeekBar
+            android:id="@+id/video_progress"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:progressTint="@color/white"
+            android:thumbTint="@color/white"/>
+
+        <TextView
+            android:id="@+id/text_total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_orientation"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_full_screen_exit"
+            android:background="@android:color/transparent"
+            android:layout_marginStart="24dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_lock"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="10dp"
+        android:padding="6dp"
+        android:background="@drawable/control_button_bg"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/iv_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lock"/>
+    </LinearLayout>
+</RelativeLayout>

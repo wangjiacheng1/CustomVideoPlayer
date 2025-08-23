@@ -14,15 +14,14 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultDataSourceFactory;
+import androidx.media3.common.util.Util;
 import com.org.customvideoplayer.R;
 
 import java.io.File;
@@ -36,7 +35,7 @@ public class PlayerService extends Service {
 
     protected Context mContext;
 
-    private boolean isLooping = false;
+    private boolean isLooping = true;
 
     public class MyPlayerBinder extends Binder {
         public PlayerService getService(){
@@ -93,7 +92,7 @@ public class PlayerService extends Service {
                 .createMediaSource(MediaItem.fromUri(uri));
 //        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
 //                .createMediaSource(MediaItem.fromUri(Uri.parse(videoPath)));
-        player = new SimpleExoPlayer.Builder(this).build();
+        player = new ExoPlayer.Builder(this).build();
         player.setMediaSource(mediaSource);
 
         // 设置循环播放监听
